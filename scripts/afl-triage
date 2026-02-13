@@ -1,0 +1,18 @@
+
+#!/usr/bin/env bash
+# Usage: scripts/afl-triage runs/ex1/findings ./targets/build/ex1_crash_on_token
+set -euo pipefail
+if [ $# -lt 2 ]; then
+  echo "Usage: $0 <afl-out-dir> <binary> [-- <args-with-@@>]"
+  echo "Example: $0 runs/ex2/findings ./targets/build/ex2_two_tokens_trap -- @@"
+  exit 1
+fi
+
+IN="$1"; BIN="$2"; shift 2 || true
+EXTRA_ARGS=("$@")
+OUT="triage_reports_$(date +%Y%m%d_%H%M%S)"
+mkdir -p "$OUT"
+
+echo "[*] Running AFLTriage over $IN -> $OUT"
+afltriage -i "$IN" -o "$OUT" -- "$BIN" "${EXTRA_ARGS[@]}"
+echo "[+] Reports in: $OUT"
